@@ -1,7 +1,7 @@
 import { fetchBreeds, fetchCatByBreed } from "./cat-api";
 import './styles.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-import SlimSelect from 'slim-select'
+import SlimSelect from 'slim-select';
 import 'slim-select/dist/slimselect.css';
 
 const ref = {
@@ -18,38 +18,45 @@ divCatInfo.classList.add('is-hidden');
 
 let arrBreedsId = [];
 fetchBreeds()
-.then(data => {
-    data.forEach(element => {
-        arrBreedsId.push({text: element.name, value: element.id});
-    });
-    new SlimSelect({
-        select: selector,
-        data: arrBreedsId
-    });
-    })
-.catch(onFetchError);
+  .then(data => {
+      data.forEach(element => {
+          arrBreedsId.push({text: element.name, value: element.id});
+      });
 
-selector.addEventListener('change', onSelectBreed);
+      new SlimSelect({
+          select: selector,
+          data: arrBreedsId,
+          events: {
+            afterChange: (newVal) => {
+              console.log(newVal);
+              onSelectBreed(newVal);
+            },
+          },
+      });
+  })
+  .catch(onFetchError);
+// 
+// selector.addEventListener('change', onSelectBreed);
 
-function onSelectBreed(event) {
+function onSelectBreed(newVal) {
+              console.log('onSelectBreed', newVal);
+              console.log('onSelectBreed', newVal[0].value);
     loader.classList.replace('is-hidden', 'loader');
     selector.classList.add('is-hidden');
     divCatInfo.classList.add('is-hidden');
 
-    const breedId = event.currentTarget.value;
+    const breedId = newVal[0].value;
     fetchCatByBreed(breedId)
     .then(data => {
+        console.log(data);
         loader.classList.replace('loader', 'is-hidden');
         selector.classList.remove('is-hidden');
         const { url, breeds } = data[0];
         
         divCatInfo.innerHTML = `<div class="box-img">
-        <img src="${url}" alt="${breeds[0].name}" width="400"/></div>
-        <div class="box">
-        <h1>${breeds[0].name}</h1>
-        <p>${breeds[0].description}</p>
-        <p><b>Temperament:</b> ${breeds[0].temperament}</p>
-        </div>`
+<img src="${url}" alt="${breeds[0].name}" width="400"/></div>
+<div class="box"><h1>${breeds[0].name}</h1><p>${breeds[0].description}</p>
+<p><b>Temperament:</b> ${breeds[0].temperament}</p></div>`
         divCatInfo.classList.remove('is-hidden');
     })
     .catch(onFetchError);
@@ -74,6 +81,12 @@ function onFetchError(error) {
 
 
     
+
+
+
+
+
+
 
 
 

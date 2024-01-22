@@ -51,7 +51,8 @@ h1 {
 }
 
 .loader::after,
-.loader::before {
+.loader::before 
+{
    content: '';
    display: inline-block;
    width: 80px;
